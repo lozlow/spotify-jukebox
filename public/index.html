@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A layout example that shows off a blog page with a list of posts.">
+
+    <title>Blog &ndash; Layout Examples &ndash; Pure</title>
+
+    
+
+
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+
+
+
+<!--[if lte IE 8]>
+  
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css">
+  
+<![endif]-->
+<!--[if gt IE 8]><!-->
+  
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+  
+<!--<![endif]-->
+
+
+
+  
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="css/layouts/blog-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="css/layouts/blog.css">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="css/progrecss.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+  
+
+
+    <style type="text/css">
+        
+        .table-responsive {
+            margin-left: -1em;
+            margin-right: -1em;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1em;
+        }
+        .table-responsive table {
+            width: 100%;
+            min-width: 35.5em;
+            border-left-width: 0;
+            border-right-width: 0;
+        }
+
+        .table-responsive .mq-table {
+            width: 100%;
+            min-width: 44em;
+        }
+
+
+        @media screen and (min-width: 48em) {
+
+            .table-responsive {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .table-responsive table {
+                border-left-width: 1px;
+                border-right-width: 1px;
+            }
+
+        }
+
+    </style>
+
+    
+
+    
+
+    
+
+</head>
+<body ng-app="SpotifyJukebox">
+
+
+
+
+
+
+
+<div id="layout" class="pure-g" ng-controller="playerController">
+    <div class="sidebar pure-u-1 pure-u-md-1-4">
+        <div class="header">
+            <hgroup>
+                <h1 class="brand-title">{{currTrack.artists.0.name}}</h1>
+                <h2 class="brand-tagline">{{currTrack.name}}</h2>
+            </hgroup>
+            <div class="progress-container" style="width: 100%; margin: 10px 0;">
+	            <div class="progrecss" data-progrecss="{{(currTrack.currSecond / currTrack.duration * 100).toFixed()}}">
+			    </div>
+			</div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li class="nav-item" ng-switch on="playerState">
+                        <a class="pure-button" href="#" ng-switch-when="0" ng-click="play()"><i class="fa fa-play"></i></a>
+                        <a class="pure-button" href="#" ng-switch-when="1" ng-click="pause()"><i class="fa fa-pause"></i></a>
+                    </li>
+                    <li class="nav-item" ng-if="playlist.length > 0">
+                        <a class="pure-button" href="#" ng-click="skip()"><i class="fa fa-fast-forward"></i></a>
+                    </li>
+                </ul>
+            </nav>
+            <p>
+                <h2 class="brand-tagline" style="font-size: 3em;" ng-if="playerState != PLAYER_STATE_STOPPED">
+                    <span class="current-time" style="">{{formatTime(currTrack.currSecond)}}</span>
+                    <span class="duration" style="font-weight: bold; color: white;">{{formatTime(currTrack.duration)}}</span>
+                </h2>
+            </p>
+        </div>
+    </div>
+
+    <div class="content pure-u-1 pure-u-md-3-4">
+
+        <div class="table-responsive">
+            <table class="pure-table pure-table-horizontal">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Artist</th>
+                        <th>Album</th>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-if="playlist.length > 0">
+                        <td><i class="fa fa-play-circle"></i></td>
+                        <td>{{currTrack.artists.0.name}}</td>
+                        <td>{{currTrack.album.name}}</td>
+                        <td>{{currTrack.name}}</td>
+                    </tr>
+                    <tr ng-repeat="track in playlist">
+                        <td>{{$index + 1}}</td>
+                        <td>{{track.artists.0.name}}</td>
+                        <td>{{track.album.name}}</td>
+                        <td>{{track.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <form class="pure-form pure-form-stacked">
+                <fieldset>
+
+                    <label for="tracklist">Tracklist</label>
+                    <select id="tracklist" ng-model="selectedTrack" ng-options="track for track in trackList">
+                    </select>
+
+                    <button class="pure-button pure-button-primary" ng-click="queueTrack(selectedTrack, 0)">Queue next</button>
+                    <button class="pure-button pure-button-primary" ng-click="queueTrack(selectedTrack)">Queue last</button>
+                    <br/>
+                    <input type="number" ng-model="seekTime" />
+                    <button class="pure-button pure-button-primary" ng-click="seek(seekTime)">Seek to second</button>
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+<script src="/js/socket.js"></script>
+<script src="/js/main.js"></script>
+
+
+</body>
+</html>
