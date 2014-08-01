@@ -8,7 +8,7 @@ module.exports = function(app, sPlayer) {
   app.post('/api/queue/next', function(req, res) {
   	var track = sPlayer.spotify.createFromLink(req.param('track'));
   	sPlayer.queue.queueNext(track);
-  	res.send(200);
+  	res.send(track);
   });
 
   app.post('/api/queue/:pos?', function(req, res) {
@@ -17,7 +17,7 @@ module.exports = function(app, sPlayer) {
   	if (req.param('pos') === 0)
   		pos = 0;
   	sPlayer.queue.enqueue(track, pos);
-  	res.send(200);
+  	res.send(track);
   });
 
 };

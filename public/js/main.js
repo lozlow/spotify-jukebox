@@ -19,14 +19,15 @@ sJukebox.controller("playerController", function($scope, $http, cntrlSocket) {
 	];
 
 	var PLAYER_STATE_STOPPED = $scope.PLAYER_STATE_STOPPED = -1,
-        PLAYER_STATE_PAUSED = $scope.PLAYER_STATE_PAUSED = 0,
-        PLAYER_STATE_PLAYING = $scope.PLAYER_STATE_PLAYING = 1;
+        PLAYER_STATE_PAUSED  = $scope.PLAYER_STATE_PAUSED  =  0,
+        PLAYER_STATE_PLAYING = $scope.PLAYER_STATE_PLAYING =  1;
 
     $scope.currTrack = {};
     $scope.currTrack.currSecond = 0;
 	$scope.playerState = PLAYER_STATE_STOPPED;
 	$scope.playlist = [];
 
+	// Captured events
 	cntrlSocket.on('playerStateChange', function(state) {
 		$scope.playerState = state;
 	});
@@ -66,6 +67,7 @@ sJukebox.controller("playerController", function($scope, $http, cntrlSocket) {
 		$scope.playlist = data.playlist;
 	});
 
+	// Emitted events
 	$scope.play = function() {
 		cntrlSocket.emit('player:cmd:play');
 	}
@@ -82,6 +84,7 @@ sJukebox.controller("playerController", function($scope, $http, cntrlSocket) {
 		cntrlSocket.emit('player:cmd:seek', time);
 	}
 
+	// Helper functions
 	$scope.queueTrack = function(track, pos) {
 		$http({
             method: 'POST',
